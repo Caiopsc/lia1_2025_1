@@ -1,1 +1,73 @@
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
 
+# Carregar variável de ambiente
+load_dotenv()
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# Função para criar agentes simulando comportamentos
+def gerar_resposta_gemini(prompt):
+    model = genai.GenerativeModel("models/gemini-1.5-flash")
+    response = model.generate_content(prompt)
+    return response.text.strip()
+    
+# Agente: Especialista em Compras de Motos
+def criar_roteiro_compra():
+    prompt = f"""
+    Você é um especialista em compras de motocicletas premium. 
+    Crie um roteiro detalhado para comprar uma Yamaha Tracer 900 GT 2024, incluindo:
+    
+    1. Pesquisa Prévia:
+    - Principais especificações técnicas da moto
+    - Itens de série e opcionais disponíveis
+    - Média de preço no mercado novo e seminovo
+    
+    2. Concessionárias Yamaha:
+    - Como encontrar concessionárias autorizadas
+    - Checklist para avaliação da moto nova
+    - Documentação necessária para compra
+    
+    3. Test Ride:
+    - Como agendar um test ride
+    - Aspectos para avaliar durante o teste
+    - Comparativo com concorrentes diretos
+    
+    4. Negociação:
+    - Itens negociáveis (acessórios, garantia, etc.)
+    - Formas de pagamento vantajosas
+    - Como verificar procedência da moto
+    
+    5. Pós-Compra:
+    - Primeiras manutenções necessárias
+    - Seguros recomendados
+    - Acessórios essenciais para touring
+    """
+    return gerar_resposta_gemini(prompt)
+  
+# Agente: Financeiro
+def estimar_custos(roteiro):
+    prompt = f"""
+    Com base neste roteiro de compra abaixo, faça uma estimativa de custos detalhada considerando:
+    
+    - Preço médio da Yamaha Tracer 900 GT 2024 zero km
+    - Custos adicionais (documentação, frete, etc.)
+    - Acessórios recomendados e seus valores
+    - Custo de manutenção nos primeiros 12 meses
+    - Seguro anual estimado
+    - Possível valor de revenda futura
+    
+    ROTEIRO:
+    {roteiro}
+    """
+    return gerar_resposta_gemini(prompt)
+    
+# Execução
+roteiro_compra = criar_roteiro_compra()
+custos = estimar_custos(roteiro_compra)
+
+# Resultados
+print("🛵 Roteiro para Compra da Yamaha Tracer 900 GT 2024:\n")
+print(roteiro_compra)
+print("\n💰 Estimativa de Custos:\n")
+print(custos)
